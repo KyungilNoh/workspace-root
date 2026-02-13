@@ -1,0 +1,46 @@
+/**
+ * property-landing-template 전역 스타일
+ * design-system만 참조
+ */
+@import '@your-org/design-system/src/styles/index.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  background-color: rgb(var(--color-surface) / 1);
+  color: rgb(var(--color-onsurface) / 1);
+}
+
+.section-shell {
+  @apply w-full;
+}
+
+.section-inner {
+  @apply mx-auto w-full max-w-screen-2xl px-4 md:px-6 lg:px-8;
+}
+
+.section-pad {
+  @apply py-12 md:py-16;
+}
+
+.section-pad-tight {
+  @apply py-8 md:py-12;
+}
+
+.section-pad-none {
+  @apply py-0;
+}
+
+.font-gothic-neo {
+  font-family: var(--font-gothic-neo), 'Apple SD Gothic Neo', sans-serif;
+}

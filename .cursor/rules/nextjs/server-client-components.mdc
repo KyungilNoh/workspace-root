@@ -1,0 +1,64 @@
+---
+description: Next.js Server vs Client Component 경계, Leaf 전략, 스타일링
+globs: "**/*.tsx"
+alwaysApply: true
+---
+
+# Server vs Client Component Boundary (Strict)
+
+This project uses Next.js App Router and a design system optimized for Server Components.
+
+- Default to Server Components.
+- Use Client Components ONLY when user interaction is required.
+- Keep 'use client' at the lowest possible level in the tree (Leaf Components) to maximize Server Component coverage.
+
+**Server Components MUST be used for:**
+- Layout components (Layout, Section, Container, Grid)
+- Text-heavy or presentational sections
+- Static UI elements that do NOT change the screen on interaction
+- Footer, Header, informational blocks, content-only components
+- Any component without event handlers or client-side state
+
+**Client Components MUST be used for:**
+- Buttons with onClick handlers
+- Form elements (Input, Select, Checkbox, Switch) with onChange/onInput
+- Accordion, Tabs, Dropdowns, Modals, Tooltips
+- Any component that relies on: useState, useEffect, useRef, event handlers, browser-only APIs
+- Any UI where user interaction causes a visual or state change
+
+If a component does not require interactivity, it MUST remain a Server Component.
+
+# Leaf Component Strategy
+
+- Do NOT add 'use client' to all design system components.
+- Only the minimum required interactive components may declare 'use client'.
+- Avoid propagating 'use client' upward in the component tree.
+- Keep interactive logic as close to the leaf components as possible.
+
+# Client Component Wrapping
+
+- External client-only libraries (e.g. Framer Motion, styled-components) MUST be wrapped inside dedicated client components.
+- Declare 'use client' ONLY in these wrapper files.
+- Example: create MotionDiv (client) instead of using motion.div directly across the codebase.
+- Other components should import and use these wrappers, not the external libraries directly.
+
+# Styling Strategy
+
+- Prefer Tailwind CSS or CSS Modules.
+- Avoid runtime CSS-in-JS libraries when possible.
+- Styling must be compatible with Server Components and resolved at build time or via standard CSS.
+- Do NOT introduce new styling libraries without discussion.
+
+# Folder & Component Responsibility
+
+- atoms/ : primitive, presentational components (Text, Icon) → Server by default
+- molecules/ : interactive UI components (Input, Tabs, Accordion) → Client when required
+- layouts/ : structural layout components (Section, Container) → Server by default
+
+# General Rules
+
+- Follow existing patterns and folder structure strictly.
+- Do not refactor unrelated files.
+- Do not add new dependencies without asking.
+- Prefer small, incremental changes.
+- When in doubt about client vs server, choose Server Components first.

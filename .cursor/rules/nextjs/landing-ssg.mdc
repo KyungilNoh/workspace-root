@@ -1,0 +1,77 @@
+---
+description: 랜딩 템플릿 SSG, SEO, 이미지 최적화, 성능
+globs: "**/*.tsx"
+alwaysApply: true
+---
+
+# Landing Template — SSG & Performance
+
+This project is a landing-template where SEO and first-load performance are critical.
+Includes 'property-landing-template'.
+
+Next.js App Router must feel as fast and lightweight as Vite, while preserving Next.js SEO and static generation benefits.
+
+# 1. Rendering Strategy (SSG First)
+
+- Prefer Static Site Generation (SSG) over CSR.
+- Landing pages rarely change data and should be pre-rendered at build time.
+- Avoid client-side data fetching unless absolutely required.
+- App Router default Server Components must be leveraged to pre-generate HTML.
+- Do NOT introduce runtime server rendering unless explicitly required.
+
+# 2. SEO and Metadata (Mandatory)
+
+- Use the Metadata API (export const metadata) in layout.tsx or page.tsx for all routes.
+- Ensure every page has a unique title and description to optimize search engine visibility.
+
+# 3. Image Optimization (Mandatory)
+
+- Use Next.js <Image /> component for ALL images.
+- Do NOT use plain <img> tags.
+- <Image /> must be used to: serve modern formats (WebP), resize per viewport, enable lazy loading.
+- Image performance is a top priority for this project.
+
+# 4. Server Component First Architecture
+
+- Default ALL components to Server Components.
+- Use Client Components ONLY for explicit user interaction: onClick, onChange, animations requiring the browser.
+- Text-heavy sections, layouts, hero sections, content blocks, footers MUST be Server Components.
+- Avoid unnecessary 'use client' declarations to minimize JavaScript bundle size.
+- If a component does not require interaction, it MUST remain a Server Component.
+
+# 5. Font and Third-Party Script Optimization
+
+- Use next/font for all fonts.
+- Avoid loading fonts via external <link> tags.
+- Fonts must be optimized to prevent CLS (layout shift).
+- Use next/script for third-party scripts (analytics, pixels).
+- Third-party scripts MUST use strategy="lazyOnload" or non-blocking strategies.
+- Do NOT block initial page rendering with marketing or analytics scripts.
+
+# 6. App Router Structure (Strict)
+
+- Use the App Router (Next.js 13+).
+- All routes must follow: app/{route}/page.tsx
+- Do NOT use the Pages Router.
+- Layouts and shared UI belong in app/layout.tsx or nested layouts.
+
+# 7. Data Fetching (App Router Standard)
+
+- Use native async/await with fetch directly inside Server Components.
+- Do NOT use legacy getStaticProps, getServerSideProps.
+- Data fetching logic should be colocated with the component that consumes it.
+- Avoid unnecessary client-side fetching.
+
+# 8. Performance Guardrails
+
+- Avoid introducing new dependencies without discussion.
+- Avoid heavy animation libraries unless strictly required.
+- Prefer CSS-based animations over JavaScript-based animations.
+- Keep bundle size minimal and predictable.
+
+# 9. General Rules
+
+- Follow existing folder structure strictly.
+- Do not refactor unrelated files.
+- Prefer small, incremental changes.
+- When in doubt, choose the solution that improves initial load speed and SEO.

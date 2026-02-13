@@ -1,0 +1,38 @@
+Cursor 에게 전달하는 말! 절대 이 파일은 포함한 '저장소' 폴더 내 모든 파일은 건들지마
+
+디렉토리 이동: cd {디렉토리명}
+해당 디렉토리 dev 실행: npm run dev
+
+
+cursor -> github 업로드 방법
+터미널에서
+1. cd workspace-root
+2. git add . (아무 반응 없음)
+3. git comit -m "메모 작성.."
+4. git push
+
+cursor <- gitHub 다운로드 방법 (이미 있는 프로젝트 최신으로 갱신)
+1. 커서를 켜고 (파일은 켜지 않음), 빈 터미널 실행
+2. cd ~/Desktop/workspace-root
+3. Git status (그냥 깃 연결상태 확인용)
+3. git pull
+
+git clone https://github.com/KyungilNoh/workspace-root.git
+
+
+보라색 브랜드 색상
+  --brand-50: 242 241 251;
+  --brand-100: 209 205 241;
+  --brand-200: 180 173 232;
+  --brand-300: 153 144 223;
+  --brand-400: 127 115 215;
+  --brand-500: 91 76 204;
+  --brand-600: 75 67 186;
+  --brand-700: 63 61 179;
+  --brand-800: 46 54 171;
+  --brand-900: 14 42 156;
+
+
+
+
+

@@ -1,0 +1,99 @@
+# 연동 설정 가이드 (이메일 · 네이버 지도)
+
+문의 폼(Gmail)과 네이버 지도 연동 방법을 정리한 메모입니다.
+
+---
+
+## 1. 네이버 지도 연동
+
+**사용 위치**: ContactSection(문의 섹션 지도), LocationMap(오시는 길 페이지)
+
+### 1) 네이버 클라우드 플랫폼에서 키 발급
+
+1. [네이버 클라우드 플랫폼](https://console.ncloud.com) 로그인
+2. **Services** → **Application** → **Maps** (또는 **AI·Application Service** → **Maps**) 이동
+3. **Application 등록** 또는 기존 애플리케이션 선택
+4. **Client ID** 복사
+
+### 2) 사용 도메인 등록
+
+- Maps 애플리케이션 설정에서 **Web Dynamic Map** 사용 설정
+- **URL 등록**에 사용할 도메인 추가
+  - 로컬: `http://localhost:3000` (필요 시 `http://127.0.0.1:3000`도 추가)
+  - iframe 사용 시: app-shell 주소 예) `http://localhost:5173`
+  - 실제 서비스: `https://yourdomain.com` 등
+
+### 3) 환경 변수 설정
+
+`.env.local` 파일에 추가 (프로젝트 루트):
+
+```env
+NEXT_PUBLIC_NAVER_MAP_CLIENT_ID=발급받은_Client_ID
+```
+
+- `NEXT_PUBLIC_` 접두사 필수 (클라이언트에서 사용)
+- 값 설정 후 **dev 서버 재시작** (`npm run dev` 다시 실행)
+
+### 4) 동작 확인
+
+- 홈 → 문의 섹션 스크롤, 또는 **오시는 길** 메뉴 이동
+- 지도가 로드되지 않으면 브라우저 개발자 도구 콘솔에서 에러 메시지 확인 (도메인 미등록, 키 오류 등)
+
+---
+
+## 2. 이메일(문의) 연동 (Gmail OAuth2)
+
+**사용 위치**: 문의하기 폼 → `/api/contact` → `lib/mailer.ts`
+
+Gmail SMTP를 OAuth2로 사용합니다. 환경 변수만 맞추면 동작합니다.
+
+### 1) Google Cloud Console에서 OAuth 클라이언트 만들기
+
+1. [Google Cloud Console](https://console.cloud.google.com) → 프로젝트 선택 또는 생성
+2. **API 및 서비스** → **사용자 인증 정보** → **사용자 인증 정보 만들기** → **OAuth 클라이언트 ID**
+3. 동의 화면이 없다면 먼저 **OAuth 동의 화면** 구성 (테스트 사용자만 써도 됨)
+4. 애플리케이션 유형: **웹 애플리케이션**
+5. **승인된 리디렉션 URI**에 추가:
+   - `https://developers.google.com/oauthplayground`
+6. 만들기 후 **클라이언트 ID**, **클라이언트 보안 비밀** 복사
+
+### 2) Refresh Token 발급 (OAuth 2.0 Playground)
+
+1. [OAuth 2.0 Playground](https://developers.google.com/oauthplayground) 접속
+2. 오른쪽 톱니바퀴 → **Use your own OAuth credentials** 체크  
+   - OAuth Client ID, OAuth Client secret 입력
+3. 왼쪽 목록에서 **Gmail API v1** → **https://mail.google.com/** 스코프 선택
+4. **Authorize APIs** 클릭 → Google 로그인 후 권한 허용
+5. **Exchange authorization code for tokens** 클릭
+6. **Refresh token** 값 복사
+
+### 3) 환경 변수 설정
+
+`.env.local`에 추가:
+
+```env
+GMAIL_CLIENT_ID=your_client_id
+GMAIL_CLIENT_SECRET=your_client_secret
+GMAIL_REFRESH_TOKEN=발급받은_refresh_token
+GMAIL_USER=발송에_사용할_ Gmail_주소@gmail.com
+TO_EMAIL=문의_도착_받을_이메일@example.com
+```
+
+- **GMAIL_USER**: 문의 메일을 보낼 때 “보내는 사람”으로 쓰는 Gmail 주소 (OAuth 허용한 계정)
+- **TO_EMAIL**: 문의가 도착할 이메일. 비우면 `GMAIL_USER`로 발송
+
+### 4) 참고
+
+- Gmail 보안 설정에 따라 “보안 수준이 낮은 앱” 또는 “2단계 인증 + 앱 비밀번호” 정책이 있을 수 있음. 여기서는 **OAuth2** 사용으로 앱 비밀번호는 필요 없음.
+- `lib/mailer.ts`는 **서버 전용**이므로 위 값들은 `NEXT_PUBLIC_` 없이 사용함.
+
+---
+
+## 요약
+
+| 항목 | 필요한 것 | env 변수 |
+|------|------------|----------|
+| 네이버 지도 | 네이버 클라우드 Maps Client ID, URL 등록 | `NEXT_PUBLIC_NAVER_MAP_CLIENT_ID` |
+| 문의 이메일 | Gmail OAuth2 클라이언트 ID/Secret, Refresh Token, 발송 계정 | `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `GMAIL_REFRESH_TOKEN`, `GMAIL_USER`, `TO_EMAIL` |
+
+`.env.local`은 git에 올리지 말고, `.env.example`만 참고용으로 두면 됩니다.
